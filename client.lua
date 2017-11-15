@@ -10,7 +10,7 @@ Citizen.CreateThread( function()
 
 		cruiseSpeed = speed
 		
-		if ped and vehicle and IsPedInAnyVehicle(ped, false) and GetPedInVehicleSeat(vehicle, -1) == ped and (IsControlJustPressed(0, 57) or (IsControlJustPressed(0, 27) and IsControlJustPressed(0, 99))) then
+		if ped and vehicle and IsPedInAnyVehicle(ped, false) and GetPedInVehicleSeat(vehicle, -1) == ped and not IsPedInAnyBoat(ped) and (IsControlJustPressed(0, 57) or (IsControlJustPressed(0, 27) and IsControlJustPressed(0, 99))) then
 
 			if not cruiseControl then
 				DisplayNotification("[Toasty's Cruise Control]: Activated at a speed of "..math.floor(speed*2.23694+0.5).."mph.")
@@ -37,6 +37,11 @@ Citizen.CreateThread( function()
 				DisplayNotification("[Toasty's Cruise Control]: Deactivated.")
 				cruiseControl = false
 			end
+		end
+
+		if speed < 5 then
+			DisplayNotification("[Toasty's Cruise Control]: Deactivated.")
+			cruiseControl = false
 		end
 	end
 end)
