@@ -1,6 +1,6 @@
 local cruiseControl = false
 local cruiseSpeed
-Citizen.CreateThread( function()
+Citizen.CreateThread(function()
 	while true do
 		Citizen.Wait(0)
 
@@ -9,20 +9,21 @@ Citizen.CreateThread( function()
 		local speed = GetEntitySpeed(vehicle)
 
 		cruiseSpeed = speed
-		
-		if ped and vehicle and IsPedInAnyVehicle(ped, false) and GetPedInVehicleSeat(vehicle, -1) == ped and not IsPedInAnyBoat(ped) and (IsControlJustPressed(0, 57) or (IsControlJustPressed(0, 27) and IsControlJustPressed(0, 99))) then
+
+		if ped and vehicle and IsPedInAnyVehicle(ped, false) and GetPedInVehicleSeat(vehicle, -1) == ped and speed*2.23694+0.5 > 20 and not IsPedInAnyBoat(ped) and not IsPedInAnyPlane(ped) and (IsControlJustPressed(0, 168) or (IsControlJustPressed(0, 27) and IsControlJustPressed(0, 99))) then
 
 			if not cruiseControl then
 				DisplayNotification("[Toasty's Cruise Control]: Activated at a speed of "..math.floor(speed*2.23694+0.5).."mph.")
 				cruiseControl = true
-				TriggerEvent('ToastysCruiseControl:setSpeed')
+				setSpeed()
 			else
 				DisplayNotification("[Toasty's Cruise Control]: Deactivated.")
 				cruiseControl = false
 			end
 		end
 
-		if not IsPedInAnyVehicle(ped, false) or not GetPedInVehicleSeat(vehicle, -1) == ped or not IsVehicleOnAllWheels(vehicle) then
+		if cruiseControl and (not IsPedInAnyVehicle(ped, false) or not GetPedInVehicleSeat(vehicle, -1) == ped or not IsVehicleOnAllWheels(vehicle)) then
+			DisplayNotification("[Toasty's Cruise Control]: Deactivated.")
 			cruiseControl = false
 		end
 
@@ -30,7 +31,7 @@ Citizen.CreateThread( function()
 
 			if IsControlPressed(27, 71) then
 				cruiseControl = false
-				TriggerEvent('ToastysCruiseControl:acceleratingToNewSpeed')
+				acceleratingToNewSpeed()
 			end
 
 			if IsControlPressed(27, 72) then
@@ -39,18 +40,17 @@ Citizen.CreateThread( function()
 			end
 		end
 
-		if speed < 5 then
+		if cruiseControl and speed*2.23694+0.5 < 20 then
 			DisplayNotification("[Toasty's Cruise Control]: Deactivated.")
 			cruiseControl = false
 		end
 	end
 end)
 
-AddEventHandler('ToastysCruiseControl:setSpeed', function()
+function setSpeed()
 	Citizen.CreateThread(function()
 		while true do
 			Citizen.Wait(0)
-
 			local ped = GetPlayerPed(-1)
 			local vehicle = GetVehiclePedIsIn(ped, false)
 
@@ -59,19 +59,18 @@ AddEventHandler('ToastysCruiseControl:setSpeed', function()
 			end
 		end
 	end)
-end)
+end
 
-AddEventHandler('ToastysCruiseControl:acceleratingToNewSpeed', function()
+function acceleratingToNewSpeed()
 	Citizen.CreateThread(function()
 		while IsControlPressed(27, 71) do
 			Citizen.Wait(1)
 		end
 
 		cruiseControl = true
-		TriggerEvent('ToastysCruiseControl:setSpeed')
-
+		setSpeed()
 	end)
-end)
+end
 
 function DisplayNotification(text)
 	SetNotificationTextEntry("STRING")
