@@ -7,10 +7,11 @@ Citizen.CreateThread(function()
 		local ped = GetPlayerPed(-1)
 		local vehicle = GetVehiclePedIsIn(ped, false)
 		local speed = GetEntitySpeed(vehicle)
-
+		DisableControlAction(0, 168, true)
+		
 		cruiseSpeed = speed
 
-		if ped and vehicle and IsPedInAnyVehicle(ped, false) and GetPedInVehicleSeat(vehicle, -1) == ped and speed*2.23694+0.5 > 20 and not IsPedInAnyBoat(ped) and not IsPedInAnyPlane(ped) and (IsControlJustPressed(0, 168) or (IsControlJustPressed(0, 27) and IsControlJustPressed(0, 99))) then
+		if ped and vehicle and IsPedInAnyVehicle(ped, false) and GetPedInVehicleSeat(vehicle, -1) == ped and speed*2.23694+0.5 > 20 and not IsPedInAnyBoat(ped) and not IsPedInAnyPlane(ped) and (IsDisabledControlJustPressed(0, 168) or (IsControlJustPressed(0, 27) and IsControlJustPressed(0, 99))) then
 
 			if not cruiseControl then
 				DisplayNotification("[Toasty's Cruise Control]: Activated at a speed of "..math.floor(speed*2.23694+0.5).."mph.")
